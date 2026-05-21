@@ -653,11 +653,13 @@ router.get('/verify', async (req, res) => {
  *     summary: Logout user
  *     tags:
  *       - Authentication
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Logout berhasil
  */
-router.post('/logout', (req, res) => {
+router.post('/logout', authMiddleware, (req, res) => {
   res.json({ message: 'Logout berhasil' });
 });
 

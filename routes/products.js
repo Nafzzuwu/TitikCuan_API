@@ -72,6 +72,18 @@ router.get(
  *               stock:
  *                 type: integer
  *                 example: 50
+ *               min_stock:
+ *                 type: integer
+ *                 example: 5
+ *                 default: 5
+ *               image_url:
+ *                 type: string
+ *                 example: "https://example.com/kopi.jpg"
+ *                 nullable: true
+ *               category:
+ *                 type: string
+ *                 example: "Minuman"
+ *                 nullable: true
  *     responses:
  *       201:
  *         description: Produk berhasil ditambahkan
@@ -162,6 +174,17 @@ router.post(
  *                 type: integer
  *               stock:
  *                 type: integer
+ *               min_stock:
+ *                 type: integer
+ *                 example: 5
+ *               image_url:
+ *                 type: string
+ *                 example: "https://example.com/kopi.jpg"
+ *                 nullable: true
+ *               category:
+ *                 type: string
+ *                 example: "Minuman"
+ *                 nullable: true
  *     responses:
  *       200:
  *         description: Produk berhasil diupdate
