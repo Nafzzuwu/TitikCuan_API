@@ -278,4 +278,58 @@ router.delete(
   }
 );
 
+// GET PRODUCT BY BARCODE
+/**
+ * @swagger
+ * /products/barcode/{barcode}:
+ *   get:
+ *     summary: Cari produk berdasarkan barcode
+ *     tags:
+ *       - Products
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: barcode
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: "8991234567890"
+ *     responses:
+ *       200:
+ *         description: Detail produk berhasil ditemukan
+ *       404:
+ *         description: Produk tidak ditemukan
+ */
+router.get(
+  '/barcode/:barcode',
+  authMiddleware,
+  async (req, res) => {
+    try {
+      const { barcode } = req.params;
+      const result = await pool.query(
+        `
+        SELECT id, barcode, name, price, stock
+        FROM products
+        WHERE barcode = $1
+        AND user_id = $2
+        `,
+        [barcode, req.user.id]
+      );
+
+      if (result.rows.length === 0) {
+        return res.status(404).json({
+          message: 'Product not found'
+        });
+      }
+
+      res.json(result.rows[0]);
+    } catch (err) {
+      res.status(500).json({
+        error: err.message
+      });
+    }
+  }
+);
+
 module.exports = router;
