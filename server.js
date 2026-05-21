@@ -102,6 +102,10 @@ app.use(
   swaggerUi.setup(swaggerSpec, swaggerOptions)
 );
 
+app.get('/swagger.json', (req, res) => {
+  res.json(swaggerSpec);
+});
+
 // Server listen
 const PORT =
   process.env.PORT || 5000;
