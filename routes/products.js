@@ -85,7 +85,10 @@ router.post(
         barcode,
         name,
         price,
-        stock
+        stock,
+        min_stock = 5,
+        image_url = null,
+        category = null
       } = req.body;
 
       const result =
@@ -97,9 +100,12 @@ router.post(
             barcode,
             name,
             price,
-            stock
+            stock,
+            min_stock,
+            image_url,
+            category
           )
-          VALUES ($1,$2,$3,$4,$5)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
           RETURNING *
           `,
           [
@@ -107,7 +113,10 @@ router.post(
             barcode,
             name,
             price,
-            stock
+            stock,
+            min_stock,
+            image_url,
+            category
           ]
         );
 
@@ -168,7 +177,10 @@ router.put(
         barcode,
         name,
         price,
-        stock
+        stock,
+        min_stock,
+        image_url,
+        category
       } = req.body;
 
       const result =
@@ -179,9 +191,12 @@ router.put(
             barcode = $1,
             name = $2,
             price = $3,
-            stock = $4
-          WHERE id = $5
-          AND user_id = $6
+            stock = $4,
+            min_stock = $5,
+            image_url = $6,
+            category = $7
+          WHERE id = $8
+          AND user_id = $9
           RETURNING *
           `,
           [
@@ -189,6 +204,9 @@ router.put(
             name,
             price,
             stock,
+            min_stock,
+            image_url,
+            category,
             id,
             req.user.id
           ]
@@ -315,6 +333,78 @@ router.get(
         AND user_id = $2
         `,
         [barcode, req.user.id]
+      );
+
+      if (result.rows.length === 0) {
+        return res.status(404).json({
+          message: 'Product not found'
+        });
+      }
+
+      res.json(result.rows[0]);
+    } catch (err) {
+      res.status(500).json({
+        error: err.message
+      });
+    }
+  }
+);
+
+// PATCH UPDATE STOCK
+/**
+ * @swagger
+ * /products/{id}/stock:
+ *   patch:
+ *     summary: Update stok produk saja
+ *     tags:
+ *       - Products
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               stock:
+ *                 type: integer
+ *                 example: 20
+ *     responses:
+ *       200:
+ *         description: Stok berhasil diupdate
+ *       404:
+ *         description: Produk tidak ditemukan
+ */
+router.patch(
+  '/:id/stock',
+  authMiddleware,
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { stock } = req.body;
+
+      if (stock === undefined || typeof stock !== 'number') {
+        return res.status(400).json({
+          error: 'stock field is required and must be a number'
+        });
+      }
+
+      const result = await pool.query(
+        `
+        UPDATE products
+        SET stock = $1
+        WHERE id = $2
+        AND user_id = $3
+        RETURNING *
+        `,
+        [stock, id, req.user.id]
       );
 
       if (result.rows.length === 0) {

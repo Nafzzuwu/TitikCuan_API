@@ -645,5 +645,21 @@ router.get('/verify', async (req, res) => {
   }
 });
 
+// POST LOGOUT
+/**
+ * @swagger
+ * /auth/logout:
+ *   post:
+ *     summary: Logout user
+ *     tags:
+ *       - Authentication
+ *     responses:
+ *       200:
+ *         description: Logout berhasil
+ */
+router.post('/logout', (req, res) => {
+  res.json({ message: 'Logout berhasil' });
+});
+
 module.exports = router;
 

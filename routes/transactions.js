@@ -110,11 +110,12 @@ router.post(
           subtotal;
 
         itemDetails.push({
-          product_id:
-            product.id,
-          qty:
-            item.qty,
-          subtotal
+          product_id: product.id,
+          qty: item.qty,
+          subtotal,
+          productName: product.name,
+          currentStock: product.stock,
+          minStock: product.min_stock
         });
       }
 
@@ -181,6 +182,31 @@ router.post(
             item.product_id
           ]
         );
+
+        const newStock = item.currentStock - item.qty;
+        const minStockLimit = item.minStock !== null && item.minStock !== undefined ? item.minStock : 5;
+        if (newStock <= minStockLimit) {
+          await client.query(
+            `
+            INSERT INTO stock_alerts
+            (
+              user_id,
+              product_id,
+              stock_at_alert,
+              latitude,
+              longitude
+            )
+            VALUES ($1, $2, $3, $4, $5)
+            `,
+            [
+              req.user.id,
+              item.product_id,
+              newStock,
+              latitude,
+              longitude
+            ]
+          );
+        }
       }
 
       await client.query(
@@ -404,6 +430,12 @@ router.post(
         items
       } = req.body;
 
+      if (latitude === undefined || longitude === undefined || typeof latitude !== 'number' || typeof longitude !== 'number') {
+        return res.status(400).json({
+          error: 'latitude and longitude are required and must be numbers'
+        });
+      }
+
       if (!Array.isArray(items) || items.length === 0) {
         return res.status(400).json({
           error: 'Items array is required and cannot be empty'
@@ -461,7 +493,10 @@ router.post(
         itemDetails.push({
           product_id: product.id,
           qty: item.qty,
-          subtotal
+          subtotal,
+          productName: product.name,
+          currentStock: product.stock,
+          minStock: product.min_stock
         });
       }
 
@@ -518,6 +553,31 @@ router.post(
           `,
           [item.qty, item.product_id]
         );
+
+        const newStock = item.currentStock - item.qty;
+        const minStockLimit = item.minStock !== null && item.minStock !== undefined ? item.minStock : 5;
+        if (newStock <= minStockLimit) {
+          await client.query(
+            `
+            INSERT INTO stock_alerts
+            (
+              user_id,
+              product_id,
+              stock_at_alert,
+              latitude,
+              longitude
+            )
+            VALUES ($1, $2, $3, $4, $5)
+            `,
+            [
+              req.user.id,
+              item.product_id,
+              newStock,
+              latitude,
+              longitude
+            ]
+          );
+        }
       }
 
       await client.query('COMMIT');

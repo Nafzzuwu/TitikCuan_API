@@ -23,6 +23,9 @@ const dashboardRoutes =
 const heatmapRoutes =
   require('./routes/heatmap');
 
+const stockAlertsRoutes =
+  require('./routes/stockAlerts');
+
 const app = express();
 
 // Middleware
@@ -85,6 +88,11 @@ app.use(
 app.use(
   '/auth',
   authRoutes
+);
+
+app.use(
+  '/stock-alerts',
+  stockAlertsRoutes
 );
 
 // SWAGGER
