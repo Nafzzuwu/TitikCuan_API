@@ -59,9 +59,14 @@ router.get(
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - name
+ *               - price
+ *               - stock
  *             properties:
  *               barcode:
  *                 type: string
+ *                 nullable: true
  *                 example: "8991234567890"
  *               name:
  *                 type: string
@@ -168,6 +173,7 @@ router.post(
  *             properties:
  *               barcode:
  *                 type: string
+ *                 nullable: true
  *               name:
  *                 type: string
  *               price:

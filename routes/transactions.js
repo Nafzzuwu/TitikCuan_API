@@ -26,6 +26,11 @@ const pool = require('../config/db');
  *               longitude:
  *                 type: number
  *                 example: 113.699
+ *               payment_method:
+ *                 type: string
+ *                 enum: [cash, transfer, qris]
+ *                 default: cash
+ *                 example: cash
  *               items:
  *                 type: array
  *                 items:
@@ -54,8 +59,16 @@ router.post(
       const {
         latitude,
         longitude,
-        items
+        items,
+        payment_method = 'cash'
       } = req.body;
+
+      const validPaymentMethods = ['cash', 'transfer', 'qris'];
+      if (!validPaymentMethods.includes(payment_method)) {
+        return res.status(400).json({
+          error: `Invalid payment_method. Allowed values: ${validPaymentMethods.join(', ')}`
+        });
+      }
 
       await client.query('BEGIN');
 
@@ -128,16 +141,18 @@ router.post(
             user_id,
             total_price,
             latitude,
-            longitude
+            longitude,
+            payment_method
           )
-          VALUES ($1,$2,$3,$4)
+          VALUES ($1,$2,$3,$4,$5)
           RETURNING *
           `,
           [
             req.user.id,
             totalPrice,
             latitude,
-            longitude
+            longitude,
+            payment_method
           ]
         );
 
@@ -402,6 +417,11 @@ router.get(
  *               longitude:
  *                 type: number
  *                 example: 113.699
+ *               payment_method:
+ *                 type: string
+ *                 enum: [cash, transfer, qris]
+ *                 default: cash
+ *                 example: cash
  *               items:
  *                 type: array
  *                 items:
@@ -416,6 +436,8 @@ router.get(
  *     responses:
  *       201:
  *         description: Transaksi berhasil dibuat
+ *       400:
+ *         description: Input tidak valid atau produk tidak memiliki barcode
  */
 router.post(
   '/barcode',
@@ -427,8 +449,16 @@ router.post(
       const {
         latitude,
         longitude,
-        items
+        items,
+        payment_method = 'cash'
       } = req.body;
+
+      const validPaymentMethods = ['cash', 'transfer', 'qris'];
+      if (!validPaymentMethods.includes(payment_method)) {
+        return res.status(400).json({
+          error: `Invalid payment_method. Allowed values: ${validPaymentMethods.join(', ')}`
+        });
+      }
 
       if (latitude === undefined || longitude === undefined || typeof latitude !== 'number' || typeof longitude !== 'number') {
         return res.status(400).json({
@@ -482,6 +512,11 @@ router.post(
 
         const product = productResult.rows[0];
 
+        // Cek produk yang barcode-nya null tidak bisa diproses via endpoint barcode
+        if (product.barcode === null) {
+          throw new Error(`Product "${product.name}" tidak memiliki barcode. Gunakan endpoint transaksi biasa dengan product_id`);
+        }
+
         // Cek stock
         if (product.stock < item.qty) {
           throw new Error(`Stock not enough for ${product.name}`);
@@ -508,16 +543,18 @@ router.post(
           user_id,
           total_price,
           latitude,
-          longitude
+          longitude,
+          payment_method
         )
-        VALUES ($1, $2, $3, $4)
+        VALUES ($1, $2, $3, $4, $5)
         RETURNING *
         `,
         [
           req.user.id,
           totalPrice,
           latitude,
-          longitude
+          longitude,
+          payment_method
         ]
       );
 
