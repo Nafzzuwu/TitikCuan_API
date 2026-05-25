@@ -172,10 +172,10 @@ Pastikan Anda sudah menginstal **Node.js** dan **PostgreSQL** di komputer Anda.
 API ini telah terintegrasi dengan **Swagger UI**, mempermudah pengujian endpoint langsung melalui browser.
 
 * 🌐 **Swagger UI Web Interface**: 
-  - URL Lokal: **[https://titik-cuan-api.vercel.app/api-docs/](https://titik-cuan-api.vercel.app/api-docs/)**
+  - URL: **[https://titik-cuan-api.vercel.app/api-docs/](https://titik-cuan-api.vercel.app/api-docs/)**
   - Tautan ini menyajikan visualisasi interaktif dari seluruh endpoint beserta skema request/response dan metode otentikasi JWT Bearer.
 * 📄 **Swagger Raw JSON Schema**: 
-  - URL Lokal: **[https://titik-cuan-api.vercel.app/swagger.json](https://titik-cuan-api.vercel.app/swagger.json)**
+  - URL: **[https://titik-cuan-api.vercel.app/swagger.json](https://titik-cuan-api.vercel.app/swagger.json)**
   - Tautan ini menyediakan spesifikasi OpenAPI dalam format raw JSON untuk diimpor ke aplikasi pengujian lain (seperti Postman atau Insomnia).
 
 > [!IMPORTANT]
