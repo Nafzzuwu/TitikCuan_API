@@ -111,7 +111,7 @@ router.get(
           SELECT COUNT(*)
           FROM products
           WHERE user_id = $1
-          AND stock < 10
+          AND stock <= min_stock
           `,
           [userId]
         );
