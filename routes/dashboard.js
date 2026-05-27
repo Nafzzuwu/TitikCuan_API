@@ -104,7 +104,7 @@ router.get(
           [userId]
         );
 
-      // stok menipis (<10)
+      // stok menipis
       const lowStock =
         await pool.query(
           `

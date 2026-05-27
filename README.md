@@ -196,6 +196,7 @@ API ini telah terintegrasi dengan **Swagger UI**, mempermudah pengujian endpoint
 | **POST** | `/auth/reactivate` | Mengaktifkan kembali akun yang dinonaktifkan | ❌ |
 | **GET** | `/auth/verify` | Tampilan verifikasi akun via link email | ❌ |
 | **POST** | `/auth/logout` | Keluar dari sesi aplikasi | `Bearer Token` |
+| **PUT** | `/auth/update-profile` | Memperbarui profil user (nama & nama toko) | `Bearer Token` |
 
 ### 📦 Products (`/products`)
 | Metode | Endpoint | Deskripsi | Otentikasi |

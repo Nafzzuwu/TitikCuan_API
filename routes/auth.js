@@ -663,5 +663,79 @@ router.post('/logout', authMiddleware, (req, res) => {
   res.json({ message: 'Logout berhasil' });
 });
 
+/**
+ * @swagger
+ * /auth/update-profile:
+ *   put:
+ *     summary: Update profil user (nama & nama toko)
+ *     tags:
+ *       - Authentication
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: Namakamu Baru
+ *               business_name:
+ *                 type: string
+ *                 example: TitikCuan Store Baru
+ *     responses:
+ *       200:
+ *         description: Profil berhasil diperbarui
+ *       400:
+ *         description: Request tidak valid
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Server error
+ */
+router.put('/update-profile', authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { name, business_name } = req.body;
+
+    if (!name && !business_name) {
+      return res.status(400).json({ message: 'Minimal harus menyediakan name atau business_name' });
+    }
+
+    let query = 'UPDATE users SET ';
+    const queryParts = [];
+    const values = [];
+    let paramIndex = 1;
+
+    if (name) {
+      queryParts.push(`name = $${paramIndex++}`);
+      values.push(name);
+    }
+
+    if (business_name) {
+      queryParts.push(`business_name = $${paramIndex++}`);
+      values.push(business_name);
+    }
+
+    values.push(userId);
+    query += queryParts.join(', ') + ` WHERE id = $${paramIndex} RETURNING id, name, business_name, email`;
+
+    const result = await pool.query(query, values);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'User tidak ditemukan' });
+    }
+
+    res.json({
+      message: 'Profil berhasil diperbarui',
+      user: result.rows[0]
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;
 
