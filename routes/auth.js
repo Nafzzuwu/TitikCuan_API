@@ -681,10 +681,10 @@ router.post('/logout', authMiddleware, (req, res) => {
  *             properties:
  *               name:
  *                 type: string
- *                 example: Namakamu Baru
+ *                 example: Ahmad
  *               business_name:
  *                 type: string
- *                 example: TitikCuan Store Baru
+ *                 example: Racing Part Ahmad Shop
  *     responses:
  *       200:
  *         description: Profil berhasil diperbarui
