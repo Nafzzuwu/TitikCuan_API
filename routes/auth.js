@@ -737,5 +737,79 @@ router.put('/update-profile', authMiddleware, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /auth/profile:
+ *   get:
+ *     summary: Mengambil profil user saat ini
+ *     tags:
+ *       - Authentication
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Berhasil mengambil data profil
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: User tidak ditemukan
+ *       500:
+ *         description: Server error
+ */
+router.get('/profile', authMiddleware, async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT id, name, business_name, email, profile_picture FROM users WHERE id = $1',
+      [req.user.id]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'User tidak ditemukan' });
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * @swagger
+ * /auth/profile-picture:
+ *   patch:
+ *     summary: Memperbarui foto profil user
+ *     tags:
+ *       - Authentication
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               profile_picture:
+ *                 type: string
+ *                 example: https://example.com/foto.jpg
+ *     responses:
+ *       200:
+ *         description: Foto profil berhasil diperbarui
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Server error
+ */
+router.patch('/profile-picture', authMiddleware, async (req, res) => {
+  try {
+    const { profile_picture } = req.body;
+    await pool.query(
+      'UPDATE users SET profile_picture = $1 WHERE id = $2',
+      [profile_picture, req.user.id]
+    );
+    res.json({ message: 'Foto profil berhasil diperbarui' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;
 
