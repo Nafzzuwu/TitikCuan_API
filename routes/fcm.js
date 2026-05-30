@@ -64,6 +64,15 @@ router.post('/broadcast', async (req, res) => {
     const response = await admin.messaging().sendEachForMulticast({
       tokens,
       notification: { title, body },
+      android: {
+        priority: 'high',
+        notification: {
+          channelId: 'high_importance_channel',
+          priority: 'high',
+          defaultSound: true,
+          defaultVibrateTimings: true,
+        },
+      },
     });
 
     res.json({
