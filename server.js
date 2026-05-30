@@ -26,6 +26,8 @@ const heatmapRoutes =
 const stockAlertsRoutes =
   require('./routes/stockAlerts');
 
+const fcmRoutes = require('./routes/fcm');
+
 const app = express();
 
 // Middleware
@@ -94,6 +96,8 @@ app.use(
   '/stock-alerts',
   stockAlertsRoutes
 );
+
+app.use('/fcm', fcmRoutes);
 
 // SWAGGER
 const swaggerOptions = {
