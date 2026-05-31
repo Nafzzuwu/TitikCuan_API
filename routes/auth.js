@@ -268,6 +268,11 @@ router.post('/login', async (req, res) => {
         }
       );
 
+      await pool.query(
+        `UPDATE users SET active_token = $1 WHERE id = $2`,
+        [token, user.id]
+      );
+
     res.json({
       message:
         'Login success',
@@ -659,8 +664,16 @@ router.get('/verify', async (req, res) => {
  *       200:
  *         description: Logout berhasil
  */
-router.post('/logout', authMiddleware, (req, res) => {
-  res.json({ message: 'Logout berhasil' });
+router.post('/logout', authMiddleware, async (req, res) => {
+  try {
+    await pool.query(
+      `UPDATE users SET active_token = NULL WHERE id = $1`,
+      [req.user.id]
+    );
+    res.json({ message: 'Logout berhasil' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 /**
