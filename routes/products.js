@@ -252,6 +252,15 @@ router.put(
           });
       }
 
+      if (result.rows[0].stock > result.rows[0].min_stock) {
+        await pool.query(
+          `DELETE FROM stock_alerts 
+          WHERE product_id = $1 
+          AND user_id = $2`,
+          [id, req.user.id]
+        );
+      }
+
       res.json(result.rows[0]);
     } catch (err) {
       res.status(500).json({
