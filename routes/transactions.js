@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../middleware/authMiddleware');
 const pool = require('../config/db');
+const admin = require('firebase-admin');
 
 
 /**
@@ -222,6 +223,32 @@ router.post(
             ]
           );
         }
+      }
+
+      // Ambil FCM token user
+      const deviceResult = await client.query(
+        `SELECT fcm_token FROM user_devices WHERE user_id = $1`,
+        [req.user.id]
+      );
+
+      const fcmToken = deviceResult.rows[0]?.fcm_token;
+
+      if (fcmToken) {
+        await admin.messaging().send({
+          token: fcmToken,
+          notification: {
+            title: '⚠️ Stok Menipis!',
+            body: `${item.productName} tersisa ${newStock} pcs, segera restok!`,
+          },
+          android: {
+            priority: 'high',
+            notification: {
+              channelId: 'high_importance_channel',
+              priority: 'high',
+              defaultSound: true,
+            },
+          },
+        });
       }
 
       await client.query(
