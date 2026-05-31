@@ -161,94 +161,65 @@ router.post(
         transactionResult.rows[0];
 
       // insert items
-      for (
-        const item
-        of itemDetails
-      ) {
+      for (const item of itemDetails) {
 
         await client.query(
           `
           INSERT INTO transaction_items
-          (
-            transaction_id,
-            product_id,
-            qty,
-            subtotal
-          )
+          (transaction_id, product_id, qty, subtotal)
           VALUES ($1,$2,$3,$4)
           `,
-          [
-            transaction.id,
-            item.product_id,
-            item.qty,
-            item.subtotal
-          ]
+          [transaction.id, item.product_id, item.qty, item.subtotal]
         );
 
-        // kurangi stock
         await client.query(
           `
           UPDATE products
-          SET stock =
-          stock - $1
+          SET stock = stock - $1
           WHERE id = $2
           `,
-          [
-            item.qty,
-            item.product_id
-          ]
+          [item.qty, item.product_id]
         );
 
         const newStock = item.currentStock - item.qty;
         const minStockLimit = item.minStock !== null && item.minStock !== undefined ? item.minStock : 5;
+
         if (newStock <= minStockLimit) {
           await client.query(
             `
             INSERT INTO stock_alerts
-            (
-              user_id,
-              product_id,
-              stock_at_alert,
-              latitude,
-              longitude
-            )
+            (user_id, product_id, stock_at_alert, latitude, longitude)
             VALUES ($1, $2, $3, $4, $5)
             `,
-            [
-              req.user.id,
-              item.product_id,
-              newStock,
-              latitude,
-              longitude
-            ]
+            [req.user.id, item.product_id, newStock, latitude, longitude]
           );
+
+          // FCM DI DALAM LOOP & DI DALAM IF
+          const deviceResult = await client.query(
+            `SELECT fcm_token FROM user_devices WHERE user_id = $1`,
+            [req.user.id]
+          );
+
+          const fcmToken = deviceResult.rows[0]?.fcm_token;
+
+          if (fcmToken) {
+            await admin.messaging().send({
+              token: fcmToken,
+              notification: {
+                title: '⚠️ Stok Menipis!',
+                body: `${item.productName} tersisa ${newStock} pcs, segera restok!`,
+              },
+              android: {
+                priority: 'high',
+                notification: {
+                  channelId: 'high_importance_channel',
+                  priority: 'high',
+                  defaultSound: true,
+                },
+              },
+            });
+          }
         }
-      }
-
-      // Ambil FCM token user
-      const deviceResult = await client.query(
-        `SELECT fcm_token FROM user_devices WHERE user_id = $1`,
-        [req.user.id]
-      );
-
-      const fcmToken = deviceResult.rows[0]?.fcm_token;
-
-      if (fcmToken) {
-        await admin.messaging().send({
-          token: fcmToken,
-          notification: {
-            title: '⚠️ Stok Menipis!',
-            body: `${item.productName} tersisa ${newStock} pcs, segera restok!`,
-          },
-          android: {
-            priority: 'high',
-            notification: {
-              channelId: 'high_importance_channel',
-              priority: 'high',
-              defaultSound: true,
-            },
-          },
-        });
       }
 
       await client.query(
@@ -592,23 +563,12 @@ router.post(
         await client.query(
           `
           INSERT INTO transaction_items
-          (
-            transaction_id,
-            product_id,
-            qty,
-            subtotal
-          )
+          (transaction_id, product_id, qty, subtotal)
           VALUES ($1, $2, $3, $4)
           `,
-          [
-            transaction.id,
-            item.product_id,
-            item.qty,
-            item.subtotal
-          ]
+          [transaction.id, item.product_id, item.qty, item.subtotal]
         );
 
-        // Kurangi stock
         await client.query(
           `
           UPDATE products
@@ -620,27 +580,42 @@ router.post(
 
         const newStock = item.currentStock - item.qty;
         const minStockLimit = item.minStock !== null && item.minStock !== undefined ? item.minStock : 5;
+
         if (newStock <= minStockLimit) {
           await client.query(
             `
             INSERT INTO stock_alerts
-            (
-              user_id,
-              product_id,
-              stock_at_alert,
-              latitude,
-              longitude
-            )
+            (user_id, product_id, stock_at_alert, latitude, longitude)
             VALUES ($1, $2, $3, $4, $5)
             `,
-            [
-              req.user.id,
-              item.product_id,
-              newStock,
-              latitude,
-              longitude
-            ]
+            [req.user.id, item.product_id, newStock, latitude, longitude]
           );
+
+          // FCM
+          const deviceResult = await client.query(
+            `SELECT fcm_token FROM user_devices WHERE user_id = $1`,
+            [req.user.id]
+          );
+
+          const fcmToken = deviceResult.rows[0]?.fcm_token;
+
+          if (fcmToken) {
+            await admin.messaging().send({
+              token: fcmToken,
+              notification: {
+                title: '⚠️ Stok Menipis!',
+                body: `${item.productName} tersisa ${newStock} pcs, segera restok!`,
+              },
+              android: {
+                priority: 'high',
+                notification: {
+                  channelId: 'high_importance_channel',
+                  priority: 'high',
+                  defaultSound: true,
+                },
+              },
+            });
+          }
         }
       }
 
