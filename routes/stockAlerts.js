@@ -58,7 +58,8 @@ router.get(
           sa.is_read,
           sa.created_at,
           p.name AS product_name,
-          p.barcode
+          p.barcode,
+          p.min_stock          -- ← tambah ini
         FROM stock_alerts sa
         JOIN products p ON sa.product_id = p.id
         WHERE sa.user_id = $1
