@@ -12,7 +12,6 @@ if (!admin.apps.length) {
   });
 }
 
-// Simpan FCM token
 router.post('/token', authMiddleware, async (req, res) => {
   try {
     const { token } = req.body;

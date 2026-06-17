@@ -16,6 +16,26 @@ const pool = require('../config/db');
  *     responses:
  *       200:
  *         description: Dashboard analytics berhasil
+ *       401:
+ *         description: Token tidak valid atau tidak tersedia
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Access denied. No token provided
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal server error
  */
 router.get(
   '/',

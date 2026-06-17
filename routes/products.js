@@ -17,6 +17,26 @@ const pool = require('../config/db');
  *     responses:
  *       200:
  *         description: List produk berhasil diambil
+ *       401:
+ *         description: Token tidak valid atau tidak tersedia
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Access denied. No token provided
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal server error
  */
 router.get(
   '/',
@@ -92,6 +112,26 @@ router.get(
  *     responses:
  *       201:
  *         description: Produk berhasil ditambahkan
+ *       401:
+ *         description: Token tidak valid atau tidak tersedia
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Access denied. No token provided
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal server error
  */
 router.post(
   '/',
@@ -194,6 +234,36 @@ router.post(
  *     responses:
  *       200:
  *         description: Produk berhasil diupdate
+ *       401:
+ *         description: Token tidak valid atau tidak tersedia
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Access denied. No token provided
+ *       404:
+ *         description: Produk tidak ditemukan
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Product not found
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal server error
  */
 router.put(
   '/:id',
@@ -289,6 +359,36 @@ router.put(
  *     responses:
  *       200:
  *         description: Produk berhasil dihapus
+ *       401:
+ *         description: Token tidak valid atau tidak tersedia
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Access denied. No token provided
+ *       404:
+ *         description: Produk tidak ditemukan
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Product not found
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal server error
  */
 router.delete(
   '/:id',
@@ -354,8 +454,36 @@ router.delete(
  *     responses:
  *       200:
  *         description: Detail produk berhasil ditemukan
+ *       401:
+ *         description: Token tidak valid atau tidak tersedia
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Access denied. No token provided
  *       404:
  *         description: Produk tidak ditemukan
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Product not found
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal server error
  */
 router.get(
   '/barcode/:barcode',
@@ -417,8 +545,46 @@ router.get(
  *     responses:
  *       200:
  *         description: Stok berhasil diupdate
+ *       400:
+ *         description: Request tidak valid
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: stock field is required and must be a number
+ *       401:
+ *         description: Token tidak valid atau tidak tersedia
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Access denied. No token provided
  *       404:
  *         description: Produk tidak ditemukan
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Product not found
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal server error
  */
 router.patch(
   '/:id/stock',

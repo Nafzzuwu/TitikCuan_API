@@ -45,6 +45,36 @@ const admin = require('firebase-admin');
  *     responses:
  *       201:
  *         description: Transaksi berhasil dibuat
+ *       400:
+ *         description: Input tidak valid
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Invalid payment_method. Allowed values: cash, transfer, qris"
+ *       401:
+ *         description: Token tidak valid atau tidak tersedia
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Access denied. No token provided
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal server error
  */
 router.post('/', authMiddleware, async (req, res) => {
   const client = await pool.connect();
@@ -145,6 +175,26 @@ router.post('/', authMiddleware, async (req, res) => {
  *     responses:
  *       200:
  *         description: List transaksi
+ *       401:
+ *         description: Token tidak valid atau tidak tersedia
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Access denied. No token provided
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal server error
  */
 router.get('/', authMiddleware, async (req, res) => {
   try {
@@ -190,6 +240,36 @@ router.get('/', authMiddleware, async (req, res) => {
  *     responses:
  *       200:
  *         description: Detail transaksi berhasil
+ *       401:
+ *         description: Token tidak valid atau tidak tersedia
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Access denied. No token provided
+ *       404:
+ *         description: Transaksi tidak ditemukan
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Transaction not found
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal server error
  */
 router.get('/:id', authMiddleware, async (req, res) => {
   try {
@@ -258,6 +338,34 @@ router.get('/:id', authMiddleware, async (req, res) => {
  *         description: Transaksi berhasil dibuat
  *       400:
  *         description: Input tidak valid atau produk tidak memiliki barcode
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Invalid item format. Each item must have a valid barcode and positive qty
+ *       401:
+ *         description: Token tidak valid atau tidak tersedia
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Access denied. No token provided
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal server error
  */
 router.post('/barcode', authMiddleware, async (req, res) => {
   const client = await pool.connect();

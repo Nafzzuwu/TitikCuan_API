@@ -40,6 +40,35 @@ const crypto = require('crypto');
  *     responses:
  *       201:
  *         description: Register berhasil
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Register success. Please check your email to verify your account.
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                     name:
+ *                       type: string
+ *                     business_name:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal server error
  */
 router.post('/register', async (req, res) => {
   try {
@@ -150,6 +179,70 @@ router.post('/register', async (req, res) => {
  *     responses:
  *       200:
  *         description: Login berhasil
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Login success
+ *                 token:
+ *                   type: string
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                     name:
+ *                       type: string
+ *                     business_name:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *       400:
+ *         description: Password salah
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Wrong password
+ *       403:
+ *         description: Akun dinonaktifkan atau email belum diverifikasi
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: ACCOUNT_DEACTIVATED
+ *                 message:
+ *                   type: string
+ *                   example: Account is deactivated
+ *       404:
+ *         description: User tidak ditemukan
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: User not found
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal server error
  */
 router.post('/login', async (req, res) => {
   try {
@@ -314,10 +407,34 @@ router.post('/login', async (req, res) => {
  *     responses:
  *       200:
  *         description: OTP berhasil dikirim ke email
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: OTP sent to email successfully
  *       404:
  *         description: Email tidak terdaftar
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Email not registered
  *       500:
  *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal server error
  */
 router.post('/forgot-password', async (req, res) => {
   try {
@@ -398,12 +515,44 @@ router.post('/forgot-password', async (req, res) => {
  *     responses:
  *       200:
  *         description: Password berhasil diubah
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Password reset successfully
  *       400:
  *         description: OTP tidak valid atau kedaluwarsa
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Invalid OTP
  *       404:
  *         description: User tidak ditemukan
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: User not found
  *       500:
  *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal server error
  */
 router.post('/reset-password', async (req, res) => {
   try {
@@ -454,8 +603,26 @@ router.post('/reset-password', async (req, res) => {
  *     responses:
  *       200:
  *         description: Akun berhasil dinonaktifkan
+ *       401:
+ *         description: Token tidak valid atau tidak tersedia
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Access denied. No token provided
  *       500:
  *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal server error
  */
 router.post('/deactivate', authMiddleware, async (req, res) => {
   try {
@@ -490,12 +657,57 @@ router.post('/deactivate', authMiddleware, async (req, res) => {
  *     responses:
  *       200:
  *         description: Akun berhasil diaktifkan kembali dan login berhasil
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Account reactivated successfully
+ *                 token:
+ *                   type: string
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                     name:
+ *                       type: string
+ *                     business_name:
+ *                       type: string
+ *                     email:
+ *                       type: string
  *       400:
  *         description: Password salah
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Wrong password
  *       404:
  *         description: User tidak ditemukan
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: User not found
  *       500:
  *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal server error
  */
 router.post('/reactivate', async (req, res) => {
   try {
@@ -553,7 +765,11 @@ router.post('/reactivate', async (req, res) => {
  *           type: string
  *     responses:
  *       200:
- *         description: Tampilan HTML verifikasi sukses atau gagal
+ *         description: Tampilan HTML verifikasi sukses
+ *       400:
+ *         description: Link verifikasi tidak valid atau kedaluwarsa (tampilan HTML)
+ *       500:
+ *         description: Server error
  */
 router.get('/verify', async (req, res) => {
   try {
@@ -663,6 +879,26 @@ router.get('/verify', async (req, res) => {
  *     responses:
  *       200:
  *         description: Logout berhasil
+ *       401:
+ *         description: Token tidak valid atau tidak tersedia
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Access denied. No token provided
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal server error
  */
 router.post('/logout', authMiddleware, async (req, res) => {
   try {
@@ -701,12 +937,65 @@ router.post('/logout', authMiddleware, async (req, res) => {
  *     responses:
  *       200:
  *         description: Profil berhasil diperbarui
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Profil berhasil diperbarui
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                     name:
+ *                       type: string
+ *                     business_name:
+ *                       type: string
+ *                     email:
+ *                       type: string
  *       400:
  *         description: Request tidak valid
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Minimal harus menyediakan name atau business_name
  *       401:
- *         description: Unauthorized
+ *         description: Token tidak valid atau tidak tersedia
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Access denied. No token provided
+ *       404:
+ *         description: User tidak ditemukan
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: User tidak ditemukan
  *       500:
  *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal server error
  */
 router.put('/update-profile', authMiddleware, async (req, res) => {
   try {
@@ -762,12 +1051,52 @@ router.put('/update-profile', authMiddleware, async (req, res) => {
  *     responses:
  *       200:
  *         description: Berhasil mengambil data profil
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                 name:
+ *                   type: string
+ *                 business_name:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *                 profile_picture:
+ *                   type: string
+ *                   nullable: true
  *       401:
- *         description: Unauthorized
+ *         description: Token tidak valid atau tidak tersedia
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Access denied. No token provided
  *       404:
  *         description: User tidak ditemukan
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: User tidak ditemukan
  *       500:
  *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal server error
  */
 router.get('/profile', authMiddleware, async (req, res) => {
   try {
@@ -806,10 +1135,34 @@ router.get('/profile', authMiddleware, async (req, res) => {
  *     responses:
  *       200:
  *         description: Foto profil berhasil diperbarui
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Foto profil berhasil diperbarui
  *       401:
- *         description: Unauthorized
+ *         description: Token tidak valid atau tidak tersedia
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Access denied. No token provided
  *       500:
  *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal server error
  */
 router.patch('/profile-picture', authMiddleware, async (req, res) => {
   try {

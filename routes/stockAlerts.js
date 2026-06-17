@@ -41,6 +41,26 @@ const pool = require('../config/db');
  *                     type: string
  *                   barcode:
  *                     type: string
+ *       401:
+ *         description: Token tidak valid atau tidak tersedia
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Access denied. No token provided
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal server error
  */
 router.get(
   '/',
@@ -59,7 +79,7 @@ router.get(
           sa.created_at,
           p.name AS product_name,
           p.barcode,
-          p.min_stock          -- ← tambah ini
+          p.min_stock
         FROM stock_alerts sa
         JOIN products p ON sa.product_id = p.id
         WHERE sa.user_id = $1
@@ -97,8 +117,36 @@ router.get(
  *     responses:
  *       200:
  *         description: Peringatan berhasil ditandai telah dibaca
+ *       401:
+ *         description: Token tidak valid atau tidak tersedia
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Access denied. No token provided
  *       404:
  *         description: Alert tidak ditemukan
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Stock alert not found
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal server error
  */
 router.patch(
   '/:id/read',
